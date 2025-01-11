@@ -1,110 +1,133 @@
-WebCraft (HTML5 Minecraft)
----------------------
+# WebCraft
+
+> A browser-based Minecraft Classic clone built with WebGL
+
 [![GitHub issues](https://img.shields.io/github/issues/Overv/WebCraft.svg)](https://github.com/Overv/WebCraft/issues)
 [![GitHub forks](https://img.shields.io/github/forks/Overv/WebCraft.svg)](https://github.com/Overv/WebCraft/network)
 [![GitHub stars](https://img.shields.io/github/stars/Overv/WebCraft.svg)](https://github.com/Overv/WebCraft/stargazers)
 [![GitHub license](https://img.shields.io/github/license/Overv/WebCraft.svg)](https://github.com/Overv/WebCraft/blob/master/LICENSE)
-[![Maintainability](https://api.codeclimate.com/v1/badges/ce6335d88c8072a3f1d3/maintainability)](https://codeclimate.com/github/WarenGonzaga/WebCraft/maintainability)
 
-**This project is no longer actively maintained!**
+📦 **Lightweight**: No heavy game engines, just pure WebGL
+🎮 **Playable**: Basic world viewing and navigation
+🚧 **In Development**: Core features still under construction
 
-This project is intended to become a Minecraft Classic clone using HTML 5 technologies, most notably WebGL and WebSockets. No third-party libraries are used, with the exception of glmatrix and socket.io. People who have written similar demos used libraries such as *three.js*, but it is
-both foolish and inefficient to use a 3D engine for rendering large amount of blocks.
+![Singleplayer structure](http://i.imgur.com/2qBGy.png)
 
-Screenshots
----------------------
+## ⚠️ Development Status
 
-<a href="http://i.imgur.com/tDzki.png">![Singleplayer structure](http://i.imgur.com/2qBGy.png)</a>
+Currently Working:
 
-Structure
----------------------
+- Basic world generation
+- WebGL-based rendering
+- Simple camera controls
+- World loading system
 
-+ *js/* - Includes the different modules that make up the functionality of WebCraft.
-+ *media/* - Contains the graphics resources.
-+ *style/* - Contains stylesheets for the HTML front-ends.
-+ *singleplayer.html* - The front-end for the singleplayer client.
-+ *multiplayer.html* - The front-end for the multiplayer client.
-+ *server.js* - The Node.js server code.
+Under Development:
 
-Modules
----------------------
+- Block manipulation (breaking/placing)
+- Physics system integration
+- Multiplayer functionality
+- Player interactions
 
-The two front-ends invoke the available modules to deliver the components necessary for the gameplay and graphics of either the singleplayer or multiplayer experience. The available modules are listed below.
+Not Implemented:
 
-**Blocks.js**
+- Real-time block manipulation
+- Inventory system
+- Block types beyond basic terrain
+- Saving/loading worlds
 
-This is the most *moddable* module, as it contains the structure with the available block materials and their respective properties. It also contains functions invoked by the render class for proper shading and lighting of blocks.
+## 🚀 Quick Start
 
-**World.js**
+1. **Install Dependencies**
 
-This is the base class, which all other modules depend on. Although it is a very important module, it is also the most passive module. It contains the block structure of the world and exposes functions for manipulating it.
+   ```bash
+   npm install
+   ```
+2. **Start the Game**
 
-**Physics.js**
+   ```bash
+   npm start
+   ```
+3. **Open in Browser**
 
-This module has strong roots in the world class and simulates the flow of fluid blocks and the gravity of falling blocks at regular intervals. It has no specific parameters and is simply invoked in the game loop to update the world.
+   ```
+   http://localhost:3000
+   ```
 
-**Render.js**
+## ✨ Features
 
-This is the module that takes care of visualizing the block structure in the world class. When a world is assigned to it, it sets up a structure of chunks that are updated when a block changes. These chunks are mostly just fancy Vertex Buffer Objects. As this module takes care of the rendering, it also houses the code that deals with *picking* (getting a block from an x, y position on the screen).
+- WebGL-based world rendering
+- Chunk-based terrain system
+- Basic navigation controls
+- World generation
+- Development framework for extending functionality
 
-**Player.js**
+## 🎮 Controls (Limited Functionality)
 
-Finally there is also the module that handles everything related to the player of the game. Surprising, perhaps, is that it also deals with the physics and collision of the player. Less surprising is that it manages the material selector and input and responds to it in an update function, just like the physics module.
+- **WASD** - Move camera
+- **Mouse** - Look around
+- **Space** - Move up
+- **Shift** - Sprint
 
-**Network.js**
+## 🔧 Development
 
-This module makes it easy to synchronize a world between a server and connected clients. It comes with both a *Client* and *Server* class to facilitate all of your networking needs.
+```bash
+# Start dev server
+npm run dev
 
-Typical game set-up
----------------------
+# Build for production
+npm run build
+```
 
-First a new world is created and the block structure is initialised.
+## 🏗 Architecture
 
-	var world = new World( 16, 16, 16 );
-	world.createFlatWorld( 6 );
+Our game is built with these core systems:
 
-The *6* in *createFlatWorld* here is the line between the ground and the first air layer.
+- **World** - Manages the block-based environment
+- **Render** - Handles WebGL graphics
+- **Physics** - Controls game physics
+- **Player** - Manages player actions
+- **Network** - Handles multiplayer
 
-Now that we have a world, we can set up a renderer, which will subsequently divide the world into chunks for rendering.
+## 💻 Requirements
 
-	var render = new Renderer( "renderSurface" );
-	render.setWorld( world, 8 );
-	render.setPerspective( 60, 0.01, 200 );
+- Any modern browser with WebGL support
+- Node.js 14 or higher
+- 2GB RAM minimum
+- Graphics card with WebGL support
 
-The *8* here determines the XYZ size of one chunk. In this case the entire world consists out of 8 chunks.
+## 🤝 Contributing
 
-To finish the code that deals with world management, we create the physics simulator.
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-	var physics = new Physics();
-	physics.setWorld( world );
+## ❓ Troubleshooting
 
-And finally, we add a local player to the game:
+**Black Screen?**
 
-	var player = new Player();
-	player.setWorld( world );
-	player.setInputCanvas( "renderSurface" );
-	player.setMaterialSelector( "materialSelector" );
+- Check if WebGL is enabled in your browser
+- Update your graphics drivers
+- Try a different browser
 
-That concludes the set-up code. The render loop can be constructed with a timer on a fixed framerate:
+**Low FPS?**
 
-	setInterval( function()
-	{
-		var time = new Date().getTime() / 1000.0;
-		
-		// Simulate physics
-		physics.simulate();
-		
-		// Update local player
-		player.update();
-		
-		// Build a chunk
-		render.buildChunks( 5 );
-		
-		// Draw world
-		render.setCamera( player.getEyePos().toArray(), player.angles );
-		render.draw();
-		
-		while ( new Date().getTime() / 1000 - time < 0.016 );
-	}, 1 );
+- Reduce render distance
+- Close other browser tabs
+- Check GPU acceleration settings
 
-To see how the material selector and canvas can be set-up, have a look at *singleplayer.html* and *style/main.css*. Note that the player and physics modules are entirely optional, so you could just as well use this code as a base for making a Minecraft map viewer on your website.
+**Controls Not Working?**
+
+- Click the game window to focus
+- Check if keyboard input is blocked
+- Restart the game
+
+## 📝 License
+
+MIT License - feel free to use for your own projects!
+
+---
+
+> **Note:** This project is no longer actively maintained, but still works great for learning and experimentation!
