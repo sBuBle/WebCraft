@@ -1,0 +1,29 @@
+{
+  "name": "webcraft",
+  "version": "1.0.0",
+  "description": "WebCraft (HTML5 Minecraft) --------------------- [![GitHub issues](https://img.shields.io/github/issues/Overv/WebCraft.svg)](https://github.com/Overv/WebCraft/issues) [![GitHub forks](https://img.shields.io/github/forks/Overv/WebCraft.svg)](https://github.com/Overv/WebCraft/network) [![GitHub stars](https://img.shields.io/github/stars/Overv/WebCraft.svg)](https://github.com/Overv/WebCraft/stargazers) [![GitHub license](https://img.shields.io/github/license/Overv/WebCraft.svg)](https://github.com/Overv/WebCraft/blob/master/LICENSE) [![Maintainability](https://api.codeclimate.com/v1/badges/ce6335d88c8072a3f1d3/maintainability)](https://codeclimate.com/github/WarenGonzaga/WebCraft/maintainability)",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vitejs/plugin-legacy": "^6.0.0",
+    "alea": "^1.0.1",
+    "express": "^4.21.2",
+    "gl-matrix": "^4.0.0-beta.2",
+    "mime": "^4.0.6",
+    "simplex-noise": "^4.0.3",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "vite": "^6.0.7",
+    "vite-plugin-static-copy": "^2.2.0"
+  },
+  "type": "module"
+}

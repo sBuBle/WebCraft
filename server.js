@@ -1,108 +1,80 @@
-// ==========================================
-// Server
-//
-// This file contains all of the code necessary for managing a
-// WebCraft server on the Node.js platform.
-// ==========================================
+// Import required modules
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Parameters
-var WORLD_SX = 128;
-var WORLD_SY = 128;
-var WORLD_SZ = 32;
-var WORLD_GROUNDHEIGHT = 16;
-var SECONDS_BETWEEN_SAVES = 60;
-var ADMIN_IP = "";
+// Get the directory name of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Load modules
-var modules = {};
-modules.helpers = require( "./js/helpers.js" );
-modules.blocks = require( "./js/blocks.js" );
-modules.world = require( "./js/world.js" );
-modules.network = require( "./js/network.js" );
-modules.io = require( "socket.io" );
-modules.fs = require( "fs" );
-var log = require( "util" ).log;
+// Create an Express application
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 
-// Set-up evil globals
-global.Vector = modules.helpers.Vector;
-global.BLOCK = modules.blocks.BLOCK;
+// Serve static files (e.g., client scripts)
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Create new empty world or load one from file
-var world = new modules.world.World( WORLD_SX, WORLD_SY, WORLD_SZ );
-log( "Creating world..." );
-if ( world.loadFromFile( "world" ) ) {
-	log( "Loaded the world from file." );
-} else {
-	log( "Creating a new empty world." );
-	world.createFlatWorld( WORLD_GROUNDHEIGHT );
-	world.saveToFile( "world" );
-}
+// Define default route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
-// Start server
-var server = new modules.network.Server( modules.io, 16 );
-server.setWorld( world );
-server.setLogger( log );
-server.setOneUserPerIp( true );
-log( "Waiting for clients..." );
+// Server state
+let worldData = {}; // Store world data here
+let clients = {}; // Store connected clients and their states
 
-// Chat commands
-server.on( "chat", function( client, nickname, msg )
-{
-	if ( msg == "/spawn" ) {
-		server.setPos( client, world.spawnPoint.x, world.spawnPoint.y, world.spawnPoint.z );
-		return true;
-	} else if ( msg.substr( 0, 3 ) == "/tp" ) {
-		var target = msg.substr( 4 );
-		target = server.findPlayerByName( target );
-		
-		if ( target != null ) {
-				server.setPos( client, target.x, target.y, target.z );
-				server.sendMessage( nickname + " was teleported to " + target.nick + "." );
-				return true;
-		} else {
-			server.sendMessage( "Couldn't find that player!", client );
-			return false;
-		}
-	} else if ( msg.substr( 0, 5 ) == "/kick" && client.handshake.address.address == ADMIN_IP ) {
-		var target = msg.substr( 6 );
-		target = server.findPlayerByName( target );
-		
-		if ( target != null ) {
-				server.kick( target.socket, "Kicked by Overv" );
-				return true;
-		} else {
-			server.sendMessage( "Couldn't find that player!", client );
-			return false;
-		}
-	} else if ( msg == "/list" ) {
-		var playerlist = "";
-		for ( var p in world.players )
-			playerlist += p + ", ";
-		playerlist = playerlist.substring( 0, playerlist.length - 2 );
-		server.sendMessage( "Players: " + playerlist, client );
-		return true;
-	} else if ( msg.substr( 0, 1 ) == "/" ) {
-		server.sendMessage( "Unknown command!", client );
-		return false;
-	}
-} );
+// Handle socket connections
+io.on('connection', (socket) => {
+    console.log(`A user connected: ${socket.id}`);
 
-// Send a welcome message to new clients
-server.on( "join", function( client, nickname )
-{
-	server.sendMessage( "Welcome! Enjoy your stay, " + nickname + "!", client );
-	server.broadcastMessage( nickname + " joined the game.", client );
-} );
+    // Handle joining the game
+    socket.on('join', (nickname) => {
+        console.log(`${nickname} joined the game.`);
+        clients[socket.id] = { nickname, position: { x: 0, y: 0, z: 0 }, angles: { pitch: 0, yaw: 0 } };
 
-// And let players know of a disconnecting user
-server.on( "leave", function( nickname )
-{
-	server.sendMessage( nickname + " left the game." );
-} );
+        // Send world data to the client
+        socket.emit('world', worldData);
 
-// Periodical saves
-setInterval( function()
-{
-	world.saveToFile( "world" );
-	log( "Saved world to file." );
-}, SECONDS_BETWEEN_SAVES * 1000 );
+        // Notify all clients about the new player
+        io.emit('message', `${nickname} has joined the game.`);
+    });
+
+    // Handle player updates
+    socket.on('updatePlayer', (data) => {
+        if (clients[socket.id]) {
+            clients[socket.id].position = data.position;
+            clients[socket.id].angles = data.angles;
+        }
+    });
+
+    // Handle chat messages
+    socket.on('chat', (message) => {
+        const nickname = clients[socket.id]?.nickname || 'Unknown';
+        console.log(`Chat from ${nickname}: ${message}`);
+        io.emit('chat', nickname, message);
+    });
+
+    // Handle disconnects
+    socket.on('disconnect', () => {
+        const nickname = clients[socket.id]?.nickname || 'Unknown';
+        console.log(`${nickname} disconnected.`);
+        io.emit('message', `${nickname} has left the game.`);
+        delete clients[socket.id];
+    });
+
+    // Handle kick events
+    socket.on('kick', (reason) => {
+        console.log(`Kicking ${socket.id} for: ${reason}`);
+        socket.emit('kick', reason);
+        socket.disconnect();
+    });
+});
+
+// Start the server
+const PORT = 3000;
+server.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});

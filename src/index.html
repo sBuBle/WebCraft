@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>WebCraft</title>
+
+		<!-- Character encoding -->
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<meta charset="UTF-8">
+
+		<!-- Stylesheet -->
+		<link href="./style/main.css" rel="stylesheet" type="text/css">
+	</head>
+
+	<body oncontextmenu="return false">
+		 <!-- Add FPS counter -->
+		<div id="fpsCounter">FPS: 0</div>
+		
+		<!-- Render surface -->
+		<canvas id="renderSurface" style="visibility: hidden"></canvas>
+
+		<!-- Material selection -->
+		<table id="materialSelector" style="display:none">
+			<tr></tr>
+		</table>
+
+		<!-- Chatbox -->
+		<div id="chatbox" style="visibility: hidden">
+			<span id="chatbox_text"></span>
+		</div>
+		<input id="chatbox_entry" type="text" maxlength="100" spellcheck="false" onkeypress="onChatEnter( this, event );" style="visibility: hidden" />
+
+		<!-- Nickname box -->
+		<div id="nickname">
+			<span>Nickname:</span><br />
+			<input id="nickname_input" type="text" maxlength="15" spellcheck="false" /> <!-- Remove inline event handler -->
+		</div>
+
+		<!-- Joining information -->
+		<div id="joininfo" style="visibility: hidden">
+			<span id="joininfo_text"></span>
+		</div>
+
+		 <!-- Loading screen -->
+		<div id="loadingScreen" style="visibility: hidden">Loading...</div>
+
+		 <!-- Error overlay -->
+		<div id="errorOverlay" style="display:none">
+			<div class="error-content">
+				<h2>Error</h2>
+				<p id="errorMessage"></p>
+				<button onclick="location.reload()">Reload Game</button>
+			</div>
+		</div>
+
+		<!-- Main code -->
+		<script type="module" src="./index.js"></script> <!-- Update path to ./scripts/index.js -->
+	</body>
+</html>
