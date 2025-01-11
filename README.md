@@ -7,9 +7,9 @@
 [![GitHub stars](https://img.shields.io/github/stars/Overv/WebCraft.svg)](https://github.com/Overv/WebCraft/stargazers)
 [![GitHub license](https://img.shields.io/github/license/Overv/WebCraft.svg)](https://github.com/Overv/WebCraft/blob/master/LICENSE)
 
-📦 **Lightweight**: No heavy game engines, just pure WebGL
-🎮 **Playable**: Basic world viewing and navigation
-🚧 **In Development**: Core features still under construction
+- 📦 **Lightweight**: No heavy game engines, just pure WebGL
+- 🎮 **Playable**: Basic world viewing and navigation
+- 🚧 **In Development**: Core features still under construction
 
 ![Singleplayer structure](http://i.imgur.com/2qBGy.png)
 
@@ -66,7 +66,7 @@ Not Implemented:
 
 - **WASD** - Move camera
 - **Mouse** - Look around
-- **Space** - Move up
+- **Space** - Jump
 - **Shift** - Sprint
 
 ## 🔧 Development
